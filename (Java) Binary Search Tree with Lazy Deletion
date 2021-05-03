@@ -1,4 +1,4 @@
-ublic class LazyBinarySearchTree {
+public class LazyBinarySearchTree {
 
    private static final int MIN_KEY = 1;
    private static final int MAX_KEY = 99;
