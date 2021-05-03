@@ -1,0 +1,42 @@
+import java.util.Scanner; 
+
+class Calculateprime
+{
+    void sieve_of_Eratosthenes(int n)
+    {
+
+        boolean myprime[] = new boolean[n+1];
+        for(int x=0;x<n;x++)
+            myprime[x] = true;
+        
+        for(int val = 2; val*val <=n; val++)
+        {
+
+            if(myprime[val] == true)
+            {
+
+                for(int x = val*2; x <= n; x += val)
+                    myprime[x] = false;
+            }
+        }
+
+for(int x = 2; x <= n; x++)
+{
+    if(myprime[x] == true)
+        System.out.print(x + " ");
+}
+    }
+    
+    
+    public static void main(String args[])
+    {
+        int n;
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter the value of n ");
+        n = in.nextInt();
+        System.out.print("\t Sieve Of Eratosthenes \t ");
+        System.out.println("\nPrime numbers that are smaller than or equal to "+ n);
+        Calculateprime calc = new Calculateprime();
+        calc.sieve_of_Eratosthenes(n);
+    }
+}
