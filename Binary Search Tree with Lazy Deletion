@@ -1,0 +1,355 @@
+ublic class LazyBinarySearchTree {
+
+   private static final int MIN_KEY = 1;
+   private static final int MAX_KEY = 99;
+   
+   private class TreeNode {
+       private int key;
+       private TreeNode leftChild;
+       private TreeNode rightChild;
+       private boolean deleted;
+       private int height;
+
+       public TreeNode(int key) {
+           this.key = key;
+           this.leftChild = null;
+           this.rightChild = null;
+           this.deleted = false;
+           this.height = 1;
+       }
+
+       public int getKey() {
+           return key;
+       }
+
+       public TreeNode getLeftChild() {
+           return leftChild;
+       }
+
+       public TreeNode getRightChild() {
+           return rightChild;
+       }
+
+       public boolean isDeleted() {
+           return deleted;
+       }
+
+       public int getHeight() {
+           return height;
+       }
+
+   @param key
+
+       public void setKey(int key) {
+           this.key = key;
+       }
+
+       @param leftChild
+
+       public void setLeftChild(TreeNode leftChild) {
+           this.leftChild = leftChild;
+       }
+
+       @param rightChild
+ 
+       public void setRightChild(TreeNode rightChild) {
+           this.rightChild = rightChild;
+       }
+
+       * @param deleted
+
+       public void setDeleted(boolean deleted) {
+           this.deleted = deleted;
+       }
+
+ @param height
+
+       public void setHeight(int height) {
+           this.height = height;
+       }
+
+       @Override
+       public String toString() {
+           return String.valueOf(this.key);
+       }
+   }
+
+   private TreeNode root;
+
+   public LazyBinarySearchTree() {
+       this.root = null;
+   }
+
+@param node
+@return - height of the node
+   private int height(TreeNode node) {
+       if (node == null)
+           return 0;
+       else
+           return node.getHeight();
+   }
+@param currentNode
+@param key
+   private boolean insert(TreeNode currentNode, int key) {
+       boolean logicalInsert = false;
+
+       if (key < currentNode.getKey()) {
+           if (currentNode.getLeftChild() != null)
+               logicalInsert = insert(currentNode.getLeftChild(), key);
+           else {
+               currentNode.setLeftChild(new TreeNode(key));
+               logicalInsert = true;
+           }
+
+       } else if (key > currentNode.getKey()) {
+           if (currentNode.getRightChild() != null)
+               logicalInsert = insert(currentNode.getRightChild(), key);
+           else {
+               currentNode.setRightChild(new TreeNode(key));
+               logicalInsert = true;
+           }
+       } else { 
+           if (currentNode.isDeleted()) {
+               currentNode.setDeleted(false);
+               logicalInsert = true;
+
+           } else
+               logicalInsert = false;
+       }
+
+       currentNode.setHeight(1 + Math.max(height(currentNode.getLeftChild()), height(currentNode.getRightChild())));
+       return logicalInsert;
+   }
+
+@param key
+   public boolean insert(int key) throws IllegalArgumentException {
+       if ((key < MIN_KEY) || (key > MAX_KEY))
+           throw new IllegalArgumentException("Error in insert: IllegalArgumentException raised");
+
+       if (this.root == null) {
+           // If there are no nodes in the tree
+           this.root = new TreeNode(key);
+
+           return true;
+       } else {
+           // If there are nodes in the tree
+           return insert(this.root, key);
+       }
+   }
+@param currentNode
+@param key
+   private boolean delete(TreeNode currentNode, int key) {
+       boolean deleted = true;
+
+       if (key < currentNode.getKey()) {
+           if (currentNode.getLeftChild() != null)
+               deleted = delete(currentNode.getLeftChild(), key);
+           else
+               deleted = false;
+
+       } else if (key > currentNode.getKey()) {
+           if (currentNode.getRightChild() != null)
+               deleted = delete(currentNode.getRightChild(), key);
+           else
+               deleted = false;
+
+       } else { 
+           if (currentNode.isDeleted())
+               deleted = false;
+           else {
+               currentNode.setDeleted(true);
+               deleted = true;
+           }
+       }
+
+       return deleted;
+   }
+   public boolean delete(int key) throws IllegalArgumentException {
+       if ((key < MIN_KEY) || (key > MAX_KEY))
+           throw new IllegalArgumentException("Error in insert: IllegalArgumentException raised");
+
+       if (this.root != null)
+           return delete(this.root, key);
+       else
+           return false;
+   }
+@param currentNode
+@param key
+   private boolean contains(TreeNode currentNode, int key) {
+       boolean found = true;
+
+       if (key < currentNode.getKey()) {
+           if (currentNode.getLeftChild() != null)
+               found = contains(currentNode.getLeftChild(), key);
+           else {
+               found = false;
+           }
+
+       } else if (key > currentNode.getKey()) {
+           if (currentNode.getRightChild() != null)
+               found = contains(currentNode.getRightChild(), key);
+           else {
+               currentNode.setRightChild(new TreeNode(key));
+               found = false;
+           }
+       } else { 
+           if (currentNode.isDeleted())
+               found = false;
+           else
+               found = true;
+       }
+
+       return found;
+   }
+
+   public boolean contains(int key) throws IllegalArgumentException {
+       if ((key < MIN_KEY) || (key > MAX_KEY))
+           throw new IllegalArgumentException("Error in contains: IllegalArgumentException raised");
+
+       if (this.root != null)
+           return contains(this.root, key);
+       else
+           return false;
+   }
+
+   public int height() {
+       if (this.root == null)
+           return -1;
+       else
+           return this.root.getHeight() - 1;
+   }
+
+   return - the minimum non-deleted element, -1 if none exists
+   private int findMin(TreeNode node, int min) {
+       if (!node.isDeleted())
+           min = node.getKey();
+
+       if (node.getLeftChild() != null)
+           return findMin(node.getLeftChild(), min);
+       else {
+           if ((node.getRightChild() != null) && node.isDeleted())
+               return findMin(node.getRightChild(), min);
+           else
+               return min;
+       }
+   }
+
+return - the minimum non-deleted element, -1 if none exists
+   public int findMin() {
+       int min = -1;
+
+       if (this.root != null) {
+           if (!this.root.isDeleted())
+               min = this.root.getKey();
+
+           if (this.root.getLeftChild() != null) {
+               min = findMin(this.root.getLeftChild(), min);
+
+               if (min == -1) {
+
+                   TreeNode node = this.root;
+
+                   while (node.getRightChild() != null) {
+                       min = findMin(node.getRightChild(), min);
+
+                       if (min != -1)
+                           break;
+
+                       node = node.getRightChild();
+                   }
+               }
+           }
+       }
+
+       return min;
+   }
+
+
+ return - the maximum non-deleted element, -1 if none exists
+   private int findMax(TreeNode node, int max) {
+       if (!node.isDeleted())
+           max = node.getKey();
+
+       if (node.getRightChild() != null)
+           return findMax(node.getRightChild(), max);
+       else {
+           if ((node.getLeftChild() != null) && node.isDeleted())
+               return findMax(node.getLeftChild(), max);
+           else
+               return max;
+       }
+   }
+
+   return - the maximum non-deleted element, -1 if none exists
+   public int findMax() {
+       int max = -1;
+
+       if (this.root != null) {
+           if (!this.root.isDeleted())
+               max = this.root.getKey();
+
+           if (this.root.getRightChild() != null) {
+               max = findMax(this.root.getRightChild(), max);
+
+               if (max == -1) {
+
+                   TreeNode node = this.root;
+
+                   while (node.getLeftChild() != null) {
+                       max = findMax(node.getLeftChild(), max);
+
+                       if (max != -1)
+                           break;
+
+                       node = node.getLeftChild();
+                   }
+               }
+           }
+       }
+
+       return max;
+   }
+
+
+   private int size(TreeNode node, int count) {
+       if (node != null) {
+           count += 1;
+
+           count = size(node.getLeftChild(), count);
+
+           count = size(node.getRightChild(), count);
+       }
+       return count;
+   }
+
+   public int size() {
+       if (this.root != null) {
+           return size(this.root, 0);
+       }
+       return 0;
+   }
+
+   @param node
+   @param sb
+   public StringBuffer preorder(TreeNode node, StringBuffer sb) {
+       if (node != null) {
+           if (node.isDeleted())
+               sb.append("*" + node.getKey() + " ");
+           else
+               sb.append(node.getKey() + " ");
+
+           preorder(node.getLeftChild(), sb);
+
+           preorder(node.getRightChild(), sb);
+       }
+
+       return sb;
+   }
+
+   return - Returns a string containing the preorder traversal
+   public String toString() {
+       StringBuffer sb = new StringBuffer();
+       sb = preorder(this.root, sb);
+       return sb.toString();
+   }
+}
